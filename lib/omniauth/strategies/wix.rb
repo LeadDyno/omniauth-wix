@@ -32,7 +32,14 @@ module OmniAuth
       end
 
       def request_phase
-        redirect client.auth_code.authorize_url({:redirectUrl => callback_url}.merge(authorize_params))
+        request_params = authorize_params
+
+        get_params = session['omniauth.params'] || {}
+        if get_params['token']
+          request_params['token'] = get_params['token']
+        end
+
+        redirect client.auth_code.authorize_url({:redirectUrl => callback_url}.merge(request_params))
       end
 
       def callback_url
